@@ -1,11 +1,31 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = process.env.PORT ?? 3000;
-  const host = process.env.HOST ?? `localhost`;
+  const configService = app.get<ConfigService>(ConfigService);
+
+  app.setGlobalPrefix('api');
+
+  // swagger
+  const config = new DocumentBuilder()
+    .setTitle('Team Task Management BE API')
+    .setDescription('API Documentation')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('api-docs', app, document);
+
+  const port = configService.get<number>('PORT') ?? 3001;
+  const host = configService.get<string>('HOST') ?? `localhost`;
+
   await app.listen(port);
-  console.log(`App run at: http://${host}:${port}`);
+
+  console.log(`API connect at: http://${host}:${port}/api`);
+  console.log(`Swagger: http://${host}:${port}/api-docs`);
 }
 bootstrap();
