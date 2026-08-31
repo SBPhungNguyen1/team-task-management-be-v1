@@ -11,6 +11,7 @@ import { UserEntity } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationResult } from 'src/common/base/interface/pagination-result.interface';
 import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -22,7 +23,10 @@ export class UsersService {
     const isExisted = await this.userRepo.exists({
       where: { email: createUserDto.email },
     });
-    if (isExisted) throw new BadRequestException('Email existed');
+    if (isExisted)
+      throw new BadRequestException(
+        'Email is already in use by another account',
+      );
 
     const hashedPassword = await this.hashPassword(createUserDto.password);
     const item = this.userRepo.create({
