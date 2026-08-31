@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsIn, IsString } from 'class-validator';
 import { BaseListDto } from 'src/common/base/dto/base-list.dto';
 
 export class QueryUserDto extends BaseListDto {
@@ -10,4 +10,9 @@ export class QueryUserDto extends BaseListDto {
   @ApiPropertyOptional()
   @IsString()
   name?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsIn(['SUPER_ADMIN', 'ADMIN', 'MEMBER'])
+  role?: string;
 }

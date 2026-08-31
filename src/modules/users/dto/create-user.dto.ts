@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { IsIn, IsString, MaxLength, MinLength } from 'class-validator';
 export class CreateUserDto {
   @IsString()
   @MaxLength(50)
@@ -15,4 +15,9 @@ export class CreateUserDto {
   @IsString()
   @ApiProperty({ example: 'A James' })
   name!: string;
+
+  @IsString()
+  @ApiProperty({ example: 'ADMIN' })
+  @IsIn(['SUPER_ADMIN', 'ADMIN', 'MEMBER'])
+  role!: string;
 }

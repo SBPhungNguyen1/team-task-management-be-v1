@@ -20,7 +20,7 @@ import { UsersModule } from './modules/users/users.module';
           username: configService.getOrThrow<string>('DB_USERNAME'),
           password: configService.getOrThrow<string>('DB_PASSWORD'),
           database: configService.getOrThrow<string>(`DB_DATABASE`),
-          entities: [__dirname + '**/*.entity{.ts,.js}'],
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize:
             configService.getOrThrow<string>('NODE_ENV') === 'development',
           extra: {
