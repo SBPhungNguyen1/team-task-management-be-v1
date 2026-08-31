@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationResult } from 'src/common/base/interface/pagination-result.interface';
@@ -15,10 +19,10 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const existed = await this.userRepo.findOne({
+    const isExisted = await this.userRepo.exists({
       where: { email: createUserDto.email },
     });
-    if (existed) throw new BadRequestException('Email existed');
+    if (isExisted) throw new BadRequestException('Email existed');
 
     const hashedPassword = await this.hashPassword(createUserDto.password);
     const item = this.userRepo.create({
@@ -49,7 +53,7 @@ export class UsersService {
       qb.andWhere('user.email ILIKE :email', { email: `%${query.email}%` });
     }
     if (query.role) {
-      qb.andWhere('user.role ILIKE :role', { role: `%${query.role}%` });
+      qb.andWhere('user.role = :role', { role: `${query.role}` });
     }
 
     // sort
@@ -94,15 +98,39 @@ export class UsersService {
     };
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const item = await this.userRepo.findOne({ where: { id } });
+    if (!item) throw new NotFoundException('No user found with this id');
+    return item;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const item = await this.userRepo.findOneBy({ id });
+    if (!item) throw new NotFoundException('No user found with this id');
+
+    if (updateUserDto.email && updateUserDto.email !== item.email) {
+      const isEmailTaken = await this.userRepo.exists({
+        where: {
+          email: updateUserDto.email,
+          id: Not(id),
+        },
+      });
+
+      if (isEmailTaken) {
+        throw new BadRequestException(
+          'Email is already in use by another account',
+        );
+      }
+    }
+
+    Object.assign(item, updateUserDto);
+    return await this.userRepo.save(item);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const deleted = await this.userRepo.softDelete(id);
+    if (deleted.affected === 0)
+      throw new NotFoundException('No user found with this id');
+    return null;
   }
 }
