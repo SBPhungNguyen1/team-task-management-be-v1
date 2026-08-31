@@ -21,12 +21,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           database: configService.getOrThrow<string>(`DB_DATABASE`),
           entities: [__dirname + '**/*.entity{.ts,.js}'],
           synchronize:
-            configService.getOrThrow<string>('ENV_NODE') === 'development',
+            configService.getOrThrow<string>('NODE_ENV') === 'development',
           extra: {
             options: `-c timezone=${timezone}`,
           },
         };
       },
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],
