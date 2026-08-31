@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Column, Entity } from 'typeorm';
+import { UserTokenEntity } from 'src/modules/auth/entities/auth.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -14,4 +15,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'varchar' })
   role!: string;
+
+  @OneToMany(() => UserTokenEntity, (token) => token.user)
+  tokens!: UserTokenEntity[];
 }
