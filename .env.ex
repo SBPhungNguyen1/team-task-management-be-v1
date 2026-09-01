@@ -20,6 +20,7 @@ JWT_SECRET=your-jwt-secret
 JWT_EXPIRES_IN=1d
 JWT_REFRESH_SECRET=your-jwt-refresh-secret
 JWT_REFRESH_EXPIRES_IN=7d
+SALT_ROUNDS=10
 
 # Redis
 REDIS_HOST=localhost
