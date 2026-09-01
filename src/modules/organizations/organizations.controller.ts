@@ -51,4 +51,9 @@ export class OrganizationsController {
   remove(@Param('id') id: string) {
     return this.organizationsService.remove(id);
   }
+
+  @Post(':id/member')
+  addMember(@Param('id') id: string, @Body() ids: string[]) {
+    return this.organizationsService.addMember(id, ids);
+  }
 }

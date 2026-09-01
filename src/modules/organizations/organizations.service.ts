@@ -11,12 +11,16 @@ import { OrganizationEntity } from './entities/organization.entity';
 import { Not, Repository } from 'typeorm';
 import { QueryOrganizationDto } from './dto/query-organization.dto';
 import { PaginationResult } from 'src/common/base/interface/pagination-result.interface';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
     @InjectRepository(OrganizationEntity)
     private readonly orgRepo: Repository<OrganizationEntity>,
+
+    @InjectRepository(UserEntity)
+    private readonly userRepo: Repository<UserEntity>,
   ) {}
 
   async create(createOrganizationDto: CreateOrganizationDto) {
@@ -84,8 +88,13 @@ export class OrganizationsService {
   }
 
   async findOne(id: string) {
-    const item = await this.orgRepo.findOneBy({
-      id,
+    const item = await this.orgRepo.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        users: true,
+      },
     });
     if (!item) throw new NotFoundException('No organization found');
 
@@ -116,5 +125,46 @@ export class OrganizationsService {
     if (deleted.affected === 0)
       throw new NotFoundException('No organization found');
     return null;
+  }
+
+  async addMember(orgId: string, ids: string[]) {
+    const organization = await this.findOne(orgId);
+
+    const users = await this.userRepo.find({
+      where: ids.map((id) => ({ id })),
+      relations: {
+        organization: true,
+      },
+    });
+
+    if (users.length !== ids.length) {
+      throw new NotFoundException('Some users not found');
+    }
+
+    const existedIds = organization.users.map((user) => user.id);
+
+    const alreadyMembers = users.filter((user) => existedIds.includes(user.id));
+
+    if (alreadyMembers.length > 0) {
+      throw new ConflictException('Some users are already members');
+    }
+
+    const alreadyInOtherOrg = users.filter(
+      (user) => user.organization && user.organization.id !== organization.id,
+    );
+
+    if (alreadyInOtherOrg.length > 0) {
+      throw new ConflictException(
+        'Some users already belong to another organization',
+      );
+    }
+
+    users.forEach((user) => {
+      user.organization = organization;
+    });
+
+    await this.userRepo.save(users);
+
+    return users;
   }
 }

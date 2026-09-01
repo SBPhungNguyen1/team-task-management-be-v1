@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { UserTokenEntity } from 'src/modules/auth/entities/auth.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { OrganizationEntity } from 'src/modules/organizations/entities/organization.entity';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -18,4 +19,9 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => UserTokenEntity, (token) => token.user)
   tokens!: UserTokenEntity[];
+
+  @ManyToOne(() => OrganizationEntity, (org) => org.users, {
+    nullable: true,
+  })
+  organization!: OrganizationEntity | null;
 }
