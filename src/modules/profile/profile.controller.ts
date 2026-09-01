@@ -1,21 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Req } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { JwtAuthGuard } from '../auth/auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import type { RequestWithUser } from 'src/common/types/request-with-user.type';
 
 @Controller('profile')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}

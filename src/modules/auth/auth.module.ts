@@ -10,12 +10,16 @@ import { PassportModule } from '@nestjs/passport';
 import { RedisModule } from '../redis/redis.module';
 import { ConfigService } from '@nestjs/config';
 import { UserEntity } from '../users/entities/user.entity';
+import { JwtAuthGuard } from './auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     UsersModule,
     TypeOrmModule.forFeature([UserTokenEntity, UserEntity]),
-    PassportModule,
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }),
     RedisModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -28,7 +32,15 @@ import { UserEntity } from '../users/entities/user.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [JwtModule],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    JwtAuthGuard,
+    {
+      provide: APP_GUARD,
+      useExisting: JwtAuthGuard,
+    },
+  ],
+  exports: [JwtModule, JwtAuthGuard, PassportModule],
 })
 export class AuthModule {}
