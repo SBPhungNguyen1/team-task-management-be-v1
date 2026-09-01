@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     AuthModule,
     RedisModule,
     ProfileModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
