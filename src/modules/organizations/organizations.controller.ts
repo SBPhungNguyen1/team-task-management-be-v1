@@ -16,6 +16,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { RoleEnum } from 'src/common/enums/roles.enum';
 import { CreateProjectDto } from '../projects/dto/create-project.dto';
+import { QueryProjectDto } from '../projects/dto/query-project.dto';
 
 @Controller('organizations')
 @ApiBearerAuth()
@@ -69,7 +70,7 @@ export class OrganizationsController {
   }
 
   @Get(':id/projects')
-  listProject(@Param('id') id: string) {
-    return this.organizationsService.listProject(id);
+  listProject(@Param('id') id: string, @Query() query: QueryProjectDto) {
+    return this.organizationsService.listProject(id, query);
   }
 }

@@ -14,6 +14,7 @@ import { PaginationResult } from 'src/common/base/interface/pagination-result.in
 import { UserEntity } from '../users/entities/user.entity';
 import { ProjectEntity } from '../projects/entities/project.entity';
 import { CreateProjectDto } from '../projects/dto/create-project.dto';
+import { QueryProjectDto } from '../projects/dto/query-project.dto';
 
 @Injectable()
 export class OrganizationsService {
@@ -173,18 +174,68 @@ export class OrganizationsService {
     return users;
   }
 
-  async listProject(id: string) {
-    const item = await this.orgRepo.findOne({
-      where: {
-        id,
-      },
-      relations: {
-        projects: true,
-      },
-    });
-    if (!item) throw new NotFoundException('No organization found');
+  async listProject(id: string, query: QueryProjectDto) {
+    const limit = Number(query.limit);
+    const page = Number(query.page);
 
-    return item;
+    const qb = this.projectRepo
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.organization', 'org')
+      .where('org.id = :orgId', { orgId: id });
+
+    if (query.name) {
+      qb.andWhere('project.name ILIKE :name', {
+        name: `%${query.name}%`,
+      });
+    }
+
+    if (query.description) {
+      qb.andWhere('project.description ILIKE :description', {
+        description: `%${query.description}%`,
+      });
+    }
+
+    const allowedFields = ['created_at', 'name'];
+
+    if (!allowedFields.includes(query.sort_by)) {
+      throw new BadRequestException('Invalid sort_by field');
+    }
+
+    qb.orderBy(`project.${query.sort_by}`, query.sort_order as 'ASC' | 'DESC');
+
+    let items: ProjectEntity[];
+    let total: number;
+
+    if (limit === -1) {
+      items = await qb.getMany();
+      total = items.length;
+
+      return {
+        items,
+        meta: {
+          limit: -1,
+          page: 1,
+          total,
+          total_pages: 1,
+        },
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    qb.skip(skip).take(limit);
+
+    [items, total] = await qb.getManyAndCount();
+
+    return {
+      items,
+      meta: {
+        limit,
+        page,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async addProject(id: string, createProjectDto: CreateProjectDto) {
