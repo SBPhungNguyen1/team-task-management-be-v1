@@ -16,6 +16,7 @@ async function bootstrap() {
     .setTitle('Team Task Management BE API')
     .setDescription('API Documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
