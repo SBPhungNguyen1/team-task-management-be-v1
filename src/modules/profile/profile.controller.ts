@@ -26,12 +26,18 @@ export class ProfileController {
   }
 
   @Patch()
-  update(@Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(updateProfileDto);
+  update(
+    @Body() updateProfileDto: UpdateProfileDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.profileService.update(updateProfileDto, req);
   }
 
-  @Post()
-  changePassword(@Body() changePasswordDto: ChangePasswordDto) {
-    return this.profileService.changePassword(changePasswordDto);
+  @Post('password')
+  changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.profileService.changePassword(changePasswordDto, req);
   }
 }
