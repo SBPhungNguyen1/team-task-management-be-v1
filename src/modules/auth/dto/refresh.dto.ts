@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RefreshDto {
-  @ApiProperty()
+  @ApiProperty({ example: '' })
   @IsString()
   @IsNotEmpty()
   refresh_token!: string;
 
-  @ApiProperty({ example: '' })
+  @ApiProperty({ example: 'abc' })
   @IsString()
   @IsNotEmpty()
   user_agent!: string;
 
-  @ApiProperty({ example: '' })
+  @ApiProperty({ example: '192.168.1.1' })
   @IsString()
   @IsNotEmpty()
   ip_address!: string;
