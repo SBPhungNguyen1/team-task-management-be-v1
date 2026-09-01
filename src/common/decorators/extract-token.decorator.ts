@@ -1,12 +1,15 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { Request } from 'express';
 
 export const ExtractToken = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): string | undefined => {
-    const request = ctx.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      return authHeader.split(' ')[1];
+  (_data: unknown, ctx: ExecutionContext): string | null => {
+    const request = ctx.switchToHttp().getRequest<Request>();
+    const authorization = request.headers.authorization;
+
+    if (!authorization?.startsWith('Bearer ')) {
+      return null;
     }
-    return undefined;
+
+    return authorization.split(' ')[1] ?? null;
   },
 );

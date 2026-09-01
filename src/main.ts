@@ -32,5 +32,3 @@ async function bootstrap() {
   console.log(`Swagger: http://${host}:${port}/api-docs`);
 }
 bootstrap();
-
-// add a line to check ci
