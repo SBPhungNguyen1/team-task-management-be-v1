@@ -10,9 +10,9 @@ import { PassportModule } from '@nestjs/passport';
 import { RedisModule } from '../redis/redis.module';
 import { ConfigService } from '@nestjs/config';
 import { UserEntity } from '../users/entities/user.entity';
-import { JwtAuthGuard } from './auth.guard';
+import { JwtAuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './roles.guard';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [

@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleEnum } from '../../common/enums/roles.enum';
-import { ROLES_KEY } from '../../common/decorators/role.decorator';
+import { RoleEnum } from '../../../common/enums/roles.enum';
+import { ROLES_KEY } from '../../../common/decorators/role.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
