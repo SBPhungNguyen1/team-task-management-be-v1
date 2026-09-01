@@ -15,6 +15,7 @@ import { QueryOrganizationDto } from './dto/query-organization.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { RoleEnum } from 'src/common/enums/roles.enum';
+import { CreateProjectDto } from '../projects/dto/create-project.dto';
 
 @Controller('organizations')
 @ApiBearerAuth()
@@ -56,5 +57,19 @@ export class OrganizationsController {
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   addMember(@Param('id') id: string, @Body() ids: string[]) {
     return this.organizationsService.addMember(id, ids);
+  }
+
+  @Post(':id/projects')
+  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
+  addProject(
+    @Param('id') id: string,
+    @Body() createProjectDto: CreateProjectDto,
+  ) {
+    return this.organizationsService.addProject(id, createProjectDto);
+  }
+
+  @Get(':id/projects')
+  listProject(@Param('id') id: string) {
+    return this.organizationsService.listProject(id);
   }
 }

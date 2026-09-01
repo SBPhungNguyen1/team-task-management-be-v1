@@ -12,6 +12,8 @@ import { Not, Repository } from 'typeorm';
 import { QueryOrganizationDto } from './dto/query-organization.dto';
 import { PaginationResult } from 'src/common/base/interface/pagination-result.interface';
 import { UserEntity } from '../users/entities/user.entity';
+import { ProjectEntity } from '../projects/entities/project.entity';
+import { CreateProjectDto } from '../projects/dto/create-project.dto';
 
 @Injectable()
 export class OrganizationsService {
@@ -21,6 +23,9 @@ export class OrganizationsService {
 
     @InjectRepository(UserEntity)
     private readonly userRepo: Repository<UserEntity>,
+
+    @InjectRepository(ProjectEntity)
+    private readonly projectRepo: Repository<ProjectEntity>,
   ) {}
 
   async create(createOrganizationDto: CreateOrganizationDto) {
@@ -166,5 +171,28 @@ export class OrganizationsService {
     await this.userRepo.save(users);
 
     return users;
+  }
+
+  async listProject(id: string) {
+    const item = await this.orgRepo.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        projects: true,
+      },
+    });
+    if (!item) throw new NotFoundException('No organization found');
+
+    return item;
+  }
+
+  async addProject(id: string, createProjectDto: CreateProjectDto) {
+    const org = await this.findOne(id);
+    const created = this.projectRepo.create({
+      ...createProjectDto,
+      organization_id: org.id,
+    });
+    return await this.projectRepo.save(created);
   }
 }
