@@ -53,6 +53,7 @@ export class OrganizationsController {
   }
 
   @Post(':id/member')
+  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   addMember(@Param('id') id: string, @Body() ids: string[]) {
     return this.organizationsService.addMember(id, ids);
   }
