@@ -1,29 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('tasks')
+@ApiBearerAuth()
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
-
-  @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.tasksService.findAll();
-  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
