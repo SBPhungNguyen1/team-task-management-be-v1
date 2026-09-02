@@ -3,6 +3,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from './entities/task.entity';
 import { Repository } from 'typeorm';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 
 @Injectable()
 export class TasksService {
@@ -27,6 +28,12 @@ export class TasksService {
   async update(id: string, updateTaskDto: UpdateTaskDto) {
     const item = await this.findOne(id);
     const updated = Object.assign(item, updateTaskDto);
+    return await this.taskRepo.save(updated);
+  }
+
+  async updateStatus(id: string, updateTaskStatusDto: UpdateTaskStatusDto) {
+    const item = await this.findOne(id);
+    const updated = Object.assign(item, updateTaskStatusDto);
     return await this.taskRepo.save(updated);
   }
 
