@@ -9,6 +9,7 @@ import { RedisModule } from './modules/redis/redis.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
     ProfileModule,
     OrganizationsModule,
     ProjectsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],

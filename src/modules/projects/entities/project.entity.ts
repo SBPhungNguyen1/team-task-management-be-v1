@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { OrganizationEntity } from 'src/modules/organizations/entities/organization.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { TaskEntity } from 'src/modules/tasks/entities/task.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('projects')
 export class ProjectEntity extends BaseEntity {
@@ -18,4 +19,7 @@ export class ProjectEntity extends BaseEntity {
   })
   @JoinColumn({ name: 'organization_id' })
   organization!: OrganizationEntity;
+
+  @OneToMany(() => TaskEntity, (task) => task.project)
+  tasks!: TaskEntity[];
 }
